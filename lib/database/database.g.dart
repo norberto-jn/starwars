@@ -63,6 +63,8 @@ class _$AppDatabase extends AppDatabase {
 
   FavoriteDAO? _favoriteDAOInstance;
 
+  PeopleDAO? _peopleDAOInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -83,6 +85,8 @@ class _$AppDatabase extends AppDatabase {
       onCreate: (database, version) async {
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `favorite` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `people` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -94,12 +98,17 @@ class _$AppDatabase extends AppDatabase {
   FavoriteDAO get favoriteDAO {
     return _favoriteDAOInstance ??= _$FavoriteDAO(database, changeListener);
   }
+
+  @override
+  PeopleDAO get peopleDAO {
+    return _peopleDAOInstance ??= _$PeopleDAO(database, changeListener);
+  }
 }
 
 class _$FavoriteDAO extends FavoriteDAO {
   _$FavoriteDAO(this.database, this.changeListener)
       : _queryAdapter = QueryAdapter(database, changeListener),
-        _favoriteModelInsertionAdapter = InsertionAdapter(
+        _favoriteEntityInsertionAdapter = InsertionAdapter(
             database,
             'favorite',
             (FavoriteEntity item) => <String, Object?>{
@@ -115,7 +124,7 @@ class _$FavoriteDAO extends FavoriteDAO {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<FavoriteEntity> _favoriteModelInsertionAdapter;
+  final InsertionAdapter<FavoriteEntity> _favoriteEntityInsertionAdapter;
 
   @override
   Future<List<FavoriteEntity>> findAll() async {
@@ -140,7 +149,52 @@ class _$FavoriteDAO extends FavoriteDAO {
 
   @override
   Future<void> save(FavoriteEntity favoriteModel) async {
-    await _favoriteModelInsertionAdapter.insert(
+    await _favoriteEntityInsertionAdapter.insert(
         favoriteModel, OnConflictStrategy.abort);
+  }
+}
+
+class _$PeopleDAO extends PeopleDAO {
+  _$PeopleDAO(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database, changeListener),
+        _peopleEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'people',
+            (PeopleEntity item) => <String, Object?>{
+                  'code': item.code,
+                  'name': item.name,
+                  'isSelected': item.isSelected ? 1 : 0
+                },
+            changeListener);
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<PeopleEntity> _peopleEntityInsertionAdapter;
+
+  @override
+  Future<List<PeopleEntity>> findAll() async {
+    return _queryAdapter.queryList('SELECT * FROM people',
+        mapper: (Map<String, Object?> row) => PeopleEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0));
+  }
+
+  @override
+  Stream<PeopleEntity?> findOne(int code) {
+    return _queryAdapter.queryStream('SELECT * FROM people WHERE code = ?1',
+        mapper: (Map<String, Object?> row) => PeopleEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0),
+        arguments: [code],
+        queryableName: 'people',
+        isView: false);
+  }
+
+  @override
+  Future<void> save(PeopleEntity peopleEntity) async {
+    await _peopleEntityInsertionAdapter.insert(
+        peopleEntity, OnConflictStrategy.abort);
   }
 }
