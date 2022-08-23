@@ -1,5 +1,4 @@
 import 'package:floor/floor.dart';
-import 'package:starwars/favorites/src/models/favorites_entity.dart';
 import 'package:starwars/people/src/models/people_entity.dart';
 
 @dao
@@ -8,8 +7,14 @@ abstract class PeopleDAO {
   Future<List<PeopleEntity>> findAll();
 
   @Query('SELECT * FROM people WHERE code = :code')
-  Stream<PeopleEntity?> findOne(int code);
+  Future<PeopleEntity?> findOne(int code);
+
+  @Query('SELECT * FROM people WHERE name = :name')
+  Future<PeopleEntity?> getByName(String name);
 
   @Insert()
   Future<void> save(PeopleEntity peopleEntity);
+
+  @Query('UPDATE people SET isSelected = :isSelected WHERE code = :code')
+  Future<void> columnUpdateIsSelect(int code, bool isSelected);
 }

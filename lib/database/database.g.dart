@@ -84,7 +84,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `favorite` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `favorite` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `identificationCode` INTEGER NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `people` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
 
@@ -114,7 +114,8 @@ class _$FavoriteDAO extends FavoriteDAO {
             (FavoriteEntity item) => <String, Object?>{
                   'code': item.code,
                   'name': item.name,
-                  'isSelected': item.isSelected ? 1 : 0
+                  'isSelected': item.isSelected ? 1 : 0,
+                  'identificationCode': item.identificationCode
                 },
             changeListener);
 
@@ -132,7 +133,8 @@ class _$FavoriteDAO extends FavoriteDAO {
         mapper: (Map<String, Object?> row) => FavoriteEntity(
             row['code'] as int?,
             row['name'] as String,
-            (row['isSelected'] as int) != 0));
+            (row['isSelected'] as int) != 0,
+            row['identificationCode'] as int));
   }
 
   @override
@@ -141,10 +143,35 @@ class _$FavoriteDAO extends FavoriteDAO {
         mapper: (Map<String, Object?> row) => FavoriteEntity(
             row['code'] as int?,
             row['name'] as String,
-            (row['isSelected'] as int) != 0),
+            (row['isSelected'] as int) != 0,
+            row['identificationCode'] as int),
         arguments: [code],
         queryableName: 'favorite',
         isView: false);
+  }
+
+  @override
+  Future<FavoriteEntity?> getByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM favorite WHERE name = ?1',
+        mapper: (Map<String, Object?> row) => FavoriteEntity(
+            row['code'] as int?,
+            row['name'] as String,
+            (row['isSelected'] as int) != 0,
+            row['identificationCode'] as int),
+        arguments: [name]);
+  }
+
+  @override
+  Future<void> delete(int code) async {
+    await _queryAdapter.queryNoReturn('DELETE FROM favorite WHERE code = ?1',
+        arguments: [code]);
+  }
+
+  @override
+  Future<void> deleteByIdentificationCode(int identificationCode) async {
+    await _queryAdapter.queryNoReturn(
+        'DELETE FROM favorite WHERE identificationCode = ?1',
+        arguments: [identificationCode]);
   }
 
   @override
@@ -156,7 +183,7 @@ class _$FavoriteDAO extends FavoriteDAO {
 
 class _$PeopleDAO extends PeopleDAO {
   _$PeopleDAO(this.database, this.changeListener)
-      : _queryAdapter = QueryAdapter(database, changeListener),
+      : _queryAdapter = QueryAdapter(database),
         _peopleEntityInsertionAdapter = InsertionAdapter(
             database,
             'people',
@@ -164,8 +191,7 @@ class _$PeopleDAO extends PeopleDAO {
                   'code': item.code,
                   'name': item.name,
                   'isSelected': item.isSelected ? 1 : 0
-                },
-            changeListener);
+                });
 
   final sqflite.DatabaseExecutor database;
 
@@ -183,13 +209,26 @@ class _$PeopleDAO extends PeopleDAO {
   }
 
   @override
-  Stream<PeopleEntity?> findOne(int code) {
-    return _queryAdapter.queryStream('SELECT * FROM people WHERE code = ?1',
+  Future<PeopleEntity?> findOne(int code) async {
+    return _queryAdapter.query('SELECT * FROM people WHERE code = ?1',
         mapper: (Map<String, Object?> row) => PeopleEntity(row['code'] as int?,
             row['name'] as String, (row['isSelected'] as int) != 0),
-        arguments: [code],
-        queryableName: 'people',
-        isView: false);
+        arguments: [code]);
+  }
+
+  @override
+  Future<PeopleEntity?> getByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM people WHERE name = ?1',
+        mapper: (Map<String, Object?> row) => PeopleEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0),
+        arguments: [name]);
+  }
+
+  @override
+  Future<void> columnUpdateIsSelect(int code, bool isSelected) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE people SET isSelected = ?2 WHERE code = ?1',
+        arguments: [code, isSelected ? 1 : 0]);
   }
 
   @override
