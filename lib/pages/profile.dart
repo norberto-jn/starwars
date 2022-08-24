@@ -19,6 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             FluttermojiCircleAvatar(),
             FluttermojiCustomizer(),
+            FluttermojiSaveWidget(),
           ],
         ));
   }

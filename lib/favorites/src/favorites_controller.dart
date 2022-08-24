@@ -6,7 +6,7 @@ class FavoriteController extends ChangeNotifier {
   
   List<FavoriteEntity> result = [];
 
-  void save(String name, bool isSelected,int identificationCode) async {
+  void save(String name, bool isSelected,String identificationCode) async {
     await FavoriteManager.save(FavoriteEntity(null, name, isSelected,identificationCode));
     await updateListFavorites();
     notifyListeners();
@@ -24,7 +24,7 @@ class FavoriteController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void deleteByIdentificationCode(int identificationCode) async {
+  void deleteByIdentificationCode(String identificationCode) async {
     await FavoriteManager.deleteByIdentificationCode(identificationCode);
     await updateListFavorites();
     notifyListeners();

@@ -20,6 +20,6 @@ abstract class FavoriteDAO {
   Future<void> delete(int code);
 
   @Query('DELETE FROM favorite WHERE identificationCode = :identificationCode')
-  Future<void> deleteByIdentificationCode(int identificationCode);
+  Future<void> deleteByIdentificationCode(String identificationCode);
 
 }

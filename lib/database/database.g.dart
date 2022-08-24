@@ -65,6 +65,8 @@ class _$AppDatabase extends AppDatabase {
 
   PeopleDAO? _peopleDAOInstance;
 
+  FilmsDAO? _filmsDAOInstance;
+
   Future<sqflite.Database> open(String path, List<Migration> migrations,
       [Callback? callback]) async {
     final databaseOptions = sqflite.OpenDatabaseOptions(
@@ -84,9 +86,11 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `favorite` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `identificationCode` INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS `favorite` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL, `identificationCode` TEXT NOT NULL)');
         await database.execute(
             'CREATE TABLE IF NOT EXISTS `people` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
+        await database.execute(
+            'CREATE TABLE IF NOT EXISTS `films` (`code` INTEGER PRIMARY KEY AUTOINCREMENT, `name` TEXT NOT NULL, `isSelected` INTEGER NOT NULL)');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -102,6 +106,11 @@ class _$AppDatabase extends AppDatabase {
   @override
   PeopleDAO get peopleDAO {
     return _peopleDAOInstance ??= _$PeopleDAO(database, changeListener);
+  }
+
+  @override
+  FilmsDAO get filmsDAO {
+    return _filmsDAOInstance ??= _$FilmsDAO(database, changeListener);
   }
 }
 
@@ -134,7 +143,7 @@ class _$FavoriteDAO extends FavoriteDAO {
             row['code'] as int?,
             row['name'] as String,
             (row['isSelected'] as int) != 0,
-            row['identificationCode'] as int));
+            row['identificationCode'] as String));
   }
 
   @override
@@ -144,7 +153,7 @@ class _$FavoriteDAO extends FavoriteDAO {
             row['code'] as int?,
             row['name'] as String,
             (row['isSelected'] as int) != 0,
-            row['identificationCode'] as int),
+            row['identificationCode'] as String),
         arguments: [code],
         queryableName: 'favorite',
         isView: false);
@@ -157,7 +166,7 @@ class _$FavoriteDAO extends FavoriteDAO {
             row['code'] as int?,
             row['name'] as String,
             (row['isSelected'] as int) != 0,
-            row['identificationCode'] as int),
+            row['identificationCode'] as String),
         arguments: [name]);
   }
 
@@ -168,7 +177,7 @@ class _$FavoriteDAO extends FavoriteDAO {
   }
 
   @override
-  Future<void> deleteByIdentificationCode(int identificationCode) async {
+  Future<void> deleteByIdentificationCode(String identificationCode) async {
     await _queryAdapter.queryNoReturn(
         'DELETE FROM favorite WHERE identificationCode = ?1',
         arguments: [identificationCode]);
@@ -234,6 +243,63 @@ class _$PeopleDAO extends PeopleDAO {
   @override
   Future<void> save(PeopleEntity peopleEntity) async {
     await _peopleEntityInsertionAdapter.insert(
+        peopleEntity, OnConflictStrategy.abort);
+  }
+}
+
+class _$FilmsDAO extends FilmsDAO {
+  _$FilmsDAO(this.database, this.changeListener)
+      : _queryAdapter = QueryAdapter(database),
+        _filmsEntityInsertionAdapter = InsertionAdapter(
+            database,
+            'films',
+            (FilmsEntity item) => <String, Object?>{
+                  'code': item.code,
+                  'name': item.name,
+                  'isSelected': item.isSelected ? 1 : 0
+                });
+
+  final sqflite.DatabaseExecutor database;
+
+  final StreamController<String> changeListener;
+
+  final QueryAdapter _queryAdapter;
+
+  final InsertionAdapter<FilmsEntity> _filmsEntityInsertionAdapter;
+
+  @override
+  Future<List<FilmsEntity>> findAll() async {
+    return _queryAdapter.queryList('SELECT * FROM films',
+        mapper: (Map<String, Object?> row) => FilmsEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0));
+  }
+
+  @override
+  Future<FilmsEntity?> findOne(int code) async {
+    return _queryAdapter.query('SELECT * FROM films WHERE code = ?1',
+        mapper: (Map<String, Object?> row) => FilmsEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0),
+        arguments: [code]);
+  }
+
+  @override
+  Future<FilmsEntity?> getByName(String name) async {
+    return _queryAdapter.query('SELECT * FROM films WHERE name = ?1',
+        mapper: (Map<String, Object?> row) => FilmsEntity(row['code'] as int?,
+            row['name'] as String, (row['isSelected'] as int) != 0),
+        arguments: [name]);
+  }
+
+  @override
+  Future<void> columnUpdateIsSelect(int code, bool isSelected) async {
+    await _queryAdapter.queryNoReturn(
+        'UPDATE films SET isSelected = ?2 WHERE code = ?1',
+        arguments: [code, isSelected ? 1 : 0]);
+  }
+
+  @override
+  Future<void> save(FilmsEntity peopleEntity) async {
+    await _filmsEntityInsertionAdapter.insert(
         peopleEntity, OnConflictStrategy.abort);
   }
 }

@@ -19,8 +19,7 @@ abstract class PeoPleManager {
 
       for (var item in jsonResponse['results']) {
         People peopleDTO = People.fromJson(item);
-        PeopleEntity? peopleEntity =
-            await PeoPleManager.getByName(peopleDTO.name!);
+        PeopleEntity? peopleEntity = await PeoPleManager.getByName(peopleDTO.name!);
 
         if (peopleEntity == null)
           await PeoPleManager.save(PeopleEntity(null, peopleDTO.name!, false));
@@ -47,7 +46,7 @@ abstract class PeoPleManager {
   static Future<void> columnUpdateIsSelect(int code, bool isSelected) async {
     AppDatabase database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     final peopleDAO = database.peopleDAO;
-    if(!isSelected) await FavoriteManager.deleteByIdentificationCode(code);
+    if(!isSelected) await FavoriteManager.deleteByIdentificationCode("p-$code");
     await peopleDAO.columnUpdateIsSelect(code, isSelected);
   }
 

@@ -33,7 +33,7 @@ abstract class FavoriteManager {
     favoriteDAO.delete(code);
   }
 
-  static Future<void> deleteByIdentificationCode(int identificationCode) async {
+  static Future<void> deleteByIdentificationCode(String identificationCode) async {
     AppDatabase database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();
     final favoriteDAO = database.favoriteDAO;
     favoriteDAO.deleteByIdentificationCode(identificationCode);

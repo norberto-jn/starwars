@@ -7,7 +7,7 @@ class FavoriteEntity {
   final int? code;
   final String name;
   final bool isSelected;
-  final int identificationCode;
+  final String identificationCode;
 
   FavoriteEntity(this.code, this.name, this.isSelected,this.identificationCode);
   
