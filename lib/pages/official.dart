@@ -17,7 +17,7 @@ class _OfficialPageState extends State<OfficialPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: AppBarLayout(context, null),
+      appBar: AppBarLayout(context, null,'pop'),
       body: Stack(
         children: [
           InAppWebView(

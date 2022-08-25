@@ -2,10 +2,9 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:starwars/database/database.dart';
-import 'package:starwars/favorites/src/services/favorites_manager.dart';
-import 'package:starwars/people/src/dto/people.dart';
-import 'package:starwars/people/src/models/people_entity.dart';
-import 'package:starwars/people/src/people_controller.dart';
+import 'package:starwars/modules/favorites/src/services/favorites_manager.dart';
+import 'package:starwars/modules/people/src/dto/people.dart';
+import 'package:starwars/modules/people/src/models/people_entity.dart';
 
 abstract class PeoPleManager {
 

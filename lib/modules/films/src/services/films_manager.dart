@@ -2,9 +2,9 @@ import 'dart:convert' as convert;
 
 import 'package:http/http.dart' as http;
 import 'package:starwars/database/database.dart';
-import 'package:starwars/favorites/src/services/favorites_manager.dart';
-import 'package:starwars/films/src/dto/film_response.dart';
-import 'package:starwars/films/src/models/films_entity.dart';
+import 'package:starwars/modules/favorites/src/services/favorites_manager.dart';
+import 'package:starwars/modules/films/src/dto/film_response.dart';
+import 'package:starwars/modules/films/src/models/films_entity.dart';
 
 abstract class FilmsManager {
   

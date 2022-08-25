@@ -1,5 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:starwars/people/src/models/people_entity.dart';
+import 'package:starwars/modules/people/src/models/people_entity.dart';
 
 @dao
 abstract class PeopleDAO {

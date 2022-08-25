@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:starwars/favorites/src/models/favorites_entity.dart';
-import 'package:starwars/favorites/src/services/favorites_manager.dart';
+import 'package:starwars/modules/favorites/src/models/favorites_entity.dart';
+import 'package:starwars/modules/favorites/src/services/favorites_manager.dart';
 
 class FavoriteController extends ChangeNotifier {
   

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:starwars/films/src/models/films_entity.dart';
-import 'package:starwars/films/src/services/films_manager.dart';
+import 'package:starwars/modules/films/src/models/films_entity.dart';
+import 'package:starwars/modules/films/src/services/films_manager.dart';
 
 class FilmsController extends ChangeNotifier {
 

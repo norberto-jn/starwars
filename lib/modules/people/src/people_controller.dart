@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:starwars/people/src/models/people_entity.dart';
-import 'package:starwars/people/src/services/people_manager.dart';
+import 'package:starwars/modules/people/src/models/people_entity.dart';
+import 'package:starwars/modules/people/src/services/people_manager.dart';
+
 
 class PeopleController extends ChangeNotifier {
 

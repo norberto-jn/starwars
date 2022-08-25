@@ -1,5 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:starwars/favorites/src/models/favorites_entity.dart';
+import 'package:starwars/modules/favorites/src/models/favorites_entity.dart';
 
 @dao
 abstract class FavoriteDAO {

@@ -1,5 +1,5 @@
 import 'package:floor/floor.dart';
-import 'package:starwars/films/src/models/films_entity.dart';
+import 'package:starwars/modules/films/src/models/films_entity.dart';
 
 @dao
 abstract class FilmsDAO {

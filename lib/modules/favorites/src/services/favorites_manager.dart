@@ -1,8 +1,7 @@
 import 'package:starwars/database/database.dart';
-import 'package:starwars/favorites/src/models/favorites_entity.dart';
+import 'package:starwars/modules/favorites/src/models/favorites_entity.dart';
 
 abstract class FavoriteManager {
-  //AppDatabase? database;
 
   static Future<void> save(FavoriteEntity favorite) async {
     AppDatabase database = await $FloorAppDatabase.databaseBuilder('app_database.db').build();

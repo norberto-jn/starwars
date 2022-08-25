@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 
 class AppBarLayout extends AppBar {
-  AppBarLayout(context, PreferredSizeWidget? bottom)
+  AppBarLayout(context, PreferredSizeWidget? bottom,String typeRoute)
       : super(
-            leading: IconButton(
-              onPressed: (){
-                Navigator.pushNamed(context, '/official');
+            leading: TextButton(
+               onPressed: (){
+                if (typeRoute == 'push') {
+                  Navigator.pushNamed(context, '/official');                  
+                }else{
+                  Navigator.pop(context, '/');   
+                }
               },
-              icon: Icon(Icons.airplay_rounded)
+              child: Text("Site Oficial",style: TextStyle(color: Colors.white),)
             ),
             iconTheme: IconThemeData(size: 40),
             actions: [
@@ -15,7 +19,11 @@ class AppBarLayout extends AppBar {
                 color: Colors.white,
                 icon: Icon(Icons.account_circle_outlined),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/profile');
+                  if (typeRoute == 'push') {
+                  Navigator.pushNamed(context, '/profile');                  
+                }else{
+                  Navigator.pop(context, '/');   
+                }
                 },
                 alignment: Alignment.center,
                 tooltip: 'Perfil',
